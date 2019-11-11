@@ -28,6 +28,13 @@ class Controller_Customers extends \Controller_App {
     /**
      * Get list
      */
+    public function action_register() {
+        return \Bus\Customers_Register::getInstance()->execute();
+    }
+    
+    /**
+     * Get list
+     */
     public function action_detail() {
         return \Bus\Customers_Detail::getInstance()->execute();
     }

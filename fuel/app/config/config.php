@@ -327,9 +327,12 @@ return array(
         'authorize' => true,
         'unauthorize_url' => array(
             'versions/check',
-            'admins/login'
+            'admins/login',
+            'customers/register'
         ),
-        'admin_authorize_url' => array(),
+        'admin_authorize_url' => array(
+            'orders/addupdate'
+        ),
         'unauthorize_basic_token_url' => array(
             'versions/check'
         ),
