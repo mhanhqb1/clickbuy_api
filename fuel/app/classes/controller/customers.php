@@ -35,6 +35,13 @@ class Controller_Customers extends \Controller_App {
     /**
      * Get list
      */
+    public function action_login() {
+        return \Bus\Customers_Login::getInstance()->execute();
+    }
+    
+    /**
+     * Get list
+     */
     public function action_detail() {
         return \Bus\Customers_Detail::getInstance()->execute();
     }

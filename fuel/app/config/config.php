@@ -327,7 +327,7 @@ return array(
         'authorize' => true,
         'unauthorize_url' => array(
             'versions/check',
-            'admins/login',
+            'customers/login',
             'customers/register'
         ),
         'admin_authorize_url' => array(

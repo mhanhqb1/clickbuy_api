@@ -178,6 +178,36 @@ class Model_Customer extends Model_Abstract {
 
         return false;
     }
+    
+    /**
+     * Login for admin.
+     *
+     * @author AnhMH
+     * @param array $param Input data.
+     * @return array|bool Returns the array or the boolean.
+     */
+    public static function login($param) {
+        $param['password'] = \Lib\Util::encodePassword($param['password'], $param['account']);
+        $query = DB::select(
+                self::$_table_name . '.*'
+            )
+            ->from(self::$_table_name)
+            ->where(self::$_table_name . '.account', '=', $param['account'])
+            ->where(self::$_table_name . '.password', '=', $param['password']);
+        $data = $query->execute(self::$slave_db)->offsetGet(0);
+        
+        if (empty($data)) {
+            self::errorNotExist('account');
+            return false;
+        }
+        
+        $data['token'] = \Model_Authenticate::addupdate(array(
+            'user_id' => $data['id'],
+            'regist_type' => !empty($data['is_admin']) ? 'admin' : 'user'
+        ));
+        
+        return $data;
+    }
 
     /**
      * Get list
