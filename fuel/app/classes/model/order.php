@@ -15,20 +15,14 @@ class Model_Order extends Model_Abstract {
     /** @var array $_properties field of table */
     protected static $_properties = array(
         'id',
-        'customer_id',
+        'user_id',
+        'code',
         'name',
         'phone',
         'address',
-        'email',
-        'total_qty',
-        'total_price',
-        'detail',
-        'note',
-        'discount',
-        'status',
-        'created',
-        'updated',
-        'disable'
+        'product',
+        'price',
+        'created'
     );
 
     protected static $_observers = array(
@@ -71,12 +65,26 @@ class Model_Order extends Model_Abstract {
             $isNew = true;
         }
         
+        if (!empty($param['code'])) {
+            $customer = Model_Customer::find('first', array(
+                'where' => array(
+                    'code' => $param['code']
+                )
+            ));
+            if (empty($customer)) {
+                self::errorNotExist('code');
+                return false;
+            }
+            $self->set('code', $param['code']);
+            $self->set('user_id', $customer['id']);
+        }
+        
         // Set data
         if (!empty($param['name'])) {
             $self->set('name', $param['name']);
         }
-        if (!empty($param['customer_id'])) {
-            $self->set('customer_id', $param['customer_id']);
+        if (!empty($param['user_id'])) {
+            $self->set('user_id', $param['user_id']);
         }
         if (!empty($param['phone'])) {
             $self->set('phone', $param['phone']);
@@ -84,25 +92,12 @@ class Model_Order extends Model_Abstract {
         if (!empty($param['address'])) {
             $self->set('address', $param['address']);
         }
-        if (!empty($param['email'])) {
-            $self->set('email', $param['email']);
+        if (!empty($param['product'])) {
+            $self->set('product', $param['product']);
         }
-        if (!empty($param['detail'])) {
-            $self->set('detail', $param['detail']);
+        if (!empty($param['price'])) {
+            $self->set('price', $param['price']);
         }
-        if (!empty($param['note'])) {
-            $self->set('note', $param['note']);
-        }
-        if (!empty($param['total_qty'])) {
-            $self->set('total_qty', $param['total_qty']);
-        }
-        if (!empty($param['total_price'])) {
-            $self->set('total_price', $param['total_price']);
-        }
-        if (isset($param['discount'])) {
-            $self->set('discount', $param['discount']);
-        }
-        $self->set('updated', $time);
         if ($isNew) {
             $self->set('created', $time);
         }
@@ -111,14 +106,6 @@ class Model_Order extends Model_Abstract {
         if ($self->save()) {
             if (empty($self->id)) {
                 $self->id = self::cached_object($self)->_original['id'];
-            }
-            if ($isNew && !empty($param['name']) && !empty($param['phone'])) {
-                try {
-                    $param['detail'] = !empty($param['detail']) ? json_decode($param['detail'], true) : array();
-                    $mail = Lib\Email::sendOrderEmail($param);
-                } catch (\Exception $ex) {
-                    \LogLib::info('Send order mail error', __METHOD__, $ex);
-                }
             }
             return $self->id;
         }
@@ -135,9 +122,6 @@ class Model_Order extends Model_Abstract {
      */
     public static function get_list($param)
     {
-        // Init
-        $adminId = !empty($param['admin_id']) ? $param['admin_id'] : '';
-        
         // Query
         $query = DB::select(
                 self::$_table_name.'.*'
@@ -149,10 +133,9 @@ class Model_Order extends Model_Abstract {
         if (!empty($param['name'])) {
             $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
         }
-        
-        if (isset($param['disable']) && $param['disable'] != '') {
-            $disable = !empty($param['disable']) ? 1 : 0;
-            $query->where(self::$_table_name.'.disable', $disable);
+        // Filter
+        if (!empty($param['code'])) {
+            $query->where(self::$_table_name.'.code', 'LIKE', "%{$param['code']}%");
         }
         
         // Pagination
@@ -174,7 +157,7 @@ class Model_Order extends Model_Abstract {
             }
             $query->order_by($sortExplode[0], $sortExplode[1]);
         } else {
-            $query->order_by(self::$_table_name . '.created', 'DESC');
+            $query->order_by(self::$_table_name . '.id', 'DESC');
         }
         
         // Get data

@@ -15,16 +15,15 @@ class Model_Customer extends Model_Abstract {
     /** @var array $_properties field of table */
     protected static $_properties = array(
         'id',
+        'account',
+        'password',
         'name',
         'address',
         'phone',
-        'user_name',
-        'pass',
         'email',
-        'note',
-        'created',
-        'updated',
-        'disable'
+        'code',
+        'order_count',
+        'created'
     );
 
     protected static $_observers = array(
@@ -39,7 +38,7 @@ class Model_Customer extends Model_Abstract {
     );
 
     /** @var array $_table_name name of table */
-    protected static $_table_name = 'customers';
+    protected static $_table_name = 'users';
 
     /**
      * Add update info
@@ -234,20 +233,19 @@ class Model_Customer extends Model_Abstract {
      */
     public static function get_all($param)
     {
-        // Init
-        $adminId = !empty($param['admin_id']) ? $param['admin_id'] : '';
-        
         // Query
         $query = DB::select(
                 self::$_table_name.'.*'
             )
             ->from(self::$_table_name)
-            ->where(self::$_table_name.'.disable', 0)
         ;
                         
         // Filter
         if (!empty($param['name'])) {
             $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
+        }
+        if (!empty($param['code'])) {
+            $query->where(self::$_table_name.'.code', 'LIKE', "%{$param['code']}%");
         }
         
         // Pagination
@@ -269,7 +267,7 @@ class Model_Customer extends Model_Abstract {
             }
             $query->order_by($sortExplode[0], $sortExplode[1]);
         } else {
-            $query->order_by(self::$_table_name . '.created', 'DESC');
+            $query->order_by(self::$_table_name . '.id', 'DESC');
         }
         
         // Get data

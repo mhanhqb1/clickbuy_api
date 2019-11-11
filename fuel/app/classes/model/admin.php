@@ -46,20 +46,15 @@ class Model_Admin extends Model_Abstract {
      * @return array|bool Returns the array or the boolean.
      */
     public static function login($param) {
-        $param['password'] = Util::encodePassword($param['password'], $param['email']);
+        $param['password'] = Util::encodePassword($param['password'], $param['account']);
         \LogLib::info('Create new token', __METHOD__, $param);
         $query = DB::select(
                 self::$_table_name . '.*'
             )
             ->from(self::$_table_name)
-            ->where(self::$_table_name . '.disable', 0)
-            ->where(self::$_table_name . '.email', '=', $param['email'])
+            ->where(self::$_table_name . '.account', '=', $param['account'])
             ->where(self::$_table_name . '.password', '=', $param['password']);
         $data = $query->execute(self::$slave_db)->offsetGet(0);
-        
-        if (!empty($data)) {
-            $data['company'] = Model_Company::find('first');
-        }
         
         return $data;
     }

@@ -6,7 +6,7 @@
 return array(
 	'default' => array(
 		'connection'  => array(
-			'dsn'        => 'mysql:host=localhost;dbname=conlatatca',
+			'dsn'        => 'mysql:host=localhost;dbname=clickbuy',
 			'username'   => 'root',
 			'password'   => '',
 		),

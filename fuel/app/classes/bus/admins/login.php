@@ -15,13 +15,13 @@ class Admins_Login extends BusAbstract {
 
     // check require
     protected $_required = array(
-        'email',
+        'account',
         'password'
     );
     
     // check length
     protected $_length = array(
-        'email' => array(0, 40),
+        'account' => array(0, 40),
         'password' => array(0, 40)
     );
     

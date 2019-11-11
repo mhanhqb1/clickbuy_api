@@ -1,17 +1,1 @@
-<?php
-
-return array(
-    'defaults' => array(
-        'phpmailer' => array(
-            'Mailer' => 'smtp',
-            'SMTPAuth' => true,
-            'SMTPSecure ' => 'tls',
-            'Host' => 'tls://smtp.gmail.com',
-            'Port' => 587,
-            'Username' => 'vcctestemail123@gmail.com',
-            'Password' => 'melody@123',
-            'Timeout' => 30, // 30 seconds
-        ),
-        'wordwrap' => 0
-    )
-);
+<?phpreturn array(    'defaults' => array(        'phpmailer' => array(            'Mailer' => 'smtp',            'SMTPAuth' => true,            'SMTPSecure ' => 'tls',            'Host' => 'tls://smtp.gmail.com',            'Port' => 587,            'Username' => 'AKIARNGJOAJSTLKWHJSJ',            'Password' => 'BNISGTqBi6WsM1XNNSZu + YyQA9NVCrQ5YAGf5MIAwl5u',            'Timeout' => 30, // 30 seconds        ),        'wordwrap' => 0    ));

@@ -14,7 +14,7 @@ class Orders_AddUpdate extends BusAbstract
 {
     /** @var array $_required field require */
     protected $_required = array(
-        
+        'code'
     );
 
     /** @var array $_length Length of fields */

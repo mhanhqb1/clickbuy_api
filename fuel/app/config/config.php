@@ -327,17 +327,7 @@ return array(
         'authorize' => true,
         'unauthorize_url' => array(
             'versions/check',
-            'admins/login',
-            'settings/general',
-            'settings/gethomedata',
-            'products/all',
-            'products/list',
-            'products/detail',
-            'posts/list',
-            'posts/detail',
-            'orders/addupdate',
-            'contacts/addupdate',
-            'pages/detail'
+            'admins/login'
         ),
         'admin_authorize_url' => array(),
         'unauthorize_basic_token_url' => array(
@@ -345,7 +335,7 @@ return array(
         ),
 
         'api_check_security' => true,
-        'api_secret_key' => 'lyonabeauty',
+        'api_secret_key' => 'clickbuydanang',
         'api_request_minute' => 10,// Minute
         'register_token_expire' => time() + 60 * 60, // 1 hour
         'api_token_expire' => time() + 30 * 24 * 60 * 60, // 30 days
