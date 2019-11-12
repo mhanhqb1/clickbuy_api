@@ -22,7 +22,11 @@ class Model_Order extends Model_Abstract {
         'address',
         'product',
         'price',
-        'created'
+        'created',
+        'product_imei',
+        'amount',
+        'extra_amount',
+        'admin_id'
     );
 
     protected static $_observers = array(
@@ -52,8 +56,16 @@ class Model_Order extends Model_Abstract {
         $self = array();
         $isNew = false;
         $time = time();
+        $amount = 100000;
+        $extraAmount = 0;
+        $customer = array();
         
-        // Check if exist User
+        if (empty($param['code'])) {
+            self::errorNotExist('code');
+            return false;
+        }
+        
+        // Check if exist Order
         if (!empty($param['id'])) {
             $self = self::find($param['id']);
             if (empty($self)) {
@@ -65,21 +77,30 @@ class Model_Order extends Model_Abstract {
             $isNew = true;
         }
         
-        if (!empty($param['code'])) {
-            $customer = Model_Customer::find('first', array(
-                'where' => array(
-                    'code' => $param['code']
-                )
-            ));
-            if (empty($customer)) {
-                self::errorNotExist('code');
-                return false;
-            }
-            $self->set('code', $param['code']);
-            $self->set('user_id', $customer['id']);
+        $customer = Model_Customer::find('first', array(
+            'where' => array(
+                'code' => $param['code']
+            )
+        ));
+        if (empty($customer)) {
+            self::errorNotExist('code');
+            return false;
         }
-        
+        $self->set('code', $param['code']);
+        $self->set('user_id', $customer['id']);
+        $query = DB::select(
+                self::$_table_name.'.*'
+            )
+            ->from(self::$_table_name)
+            ->where('user_id', $customer['id'])
+        ;
+        $orders = $query->execute()->as_array();
+        if (count($orders) % 10 == 0) {
+            $extraAmount = 500000;
+        }
         // Set data
+        $self->set('amount', $amount);
+        $self->set('extra_amount', $extraAmount);
         if (!empty($param['name'])) {
             $self->set('name', $param['name']);
         }
@@ -95,6 +116,9 @@ class Model_Order extends Model_Abstract {
         if (!empty($param['product'])) {
             $self->set('product', $param['product']);
         }
+        if (!empty($param['product_imei'])) {
+            $self->set('product_imei', $param['product_imei']);
+        }
         if (!empty($param['price'])) {
             $self->set('price', $param['price']);
         }
@@ -106,6 +130,24 @@ class Model_Order extends Model_Abstract {
         if ($self->save()) {
             if (empty($self->id)) {
                 $self->id = self::cached_object($self)->_original['id'];
+            }
+            if (!empty($customer)) {
+                // Query
+                $query = DB::select(
+                        self::$_table_name.'.*'
+                    )
+                    ->from(self::$_table_name)
+                    ->where('user_id', $customer['id'])
+                ;
+                $orders = $query->execute()->as_array();
+                $totalOrder = count($orders);
+                $totalAmount = 0;
+                foreach ($orders as $o) {
+                    $totalAmount += $o['amount'] + $o['extra_amount'];
+                }
+                $customer->set('total_amount', $totalAmount);
+                $customer->set('order_count', $totalOrder);
+                $customer->save();
             }
             return $self->id;
         }

@@ -23,7 +23,10 @@ class Model_Customer extends Model_Abstract {
         'email',
         'code',
         'order_count',
-        'created'
+        'created',
+        'is_admin',
+        'total_amount',
+        'withdraw_amount'
     );
     protected static $_observers = array(
         'Orm\Observer_CreatedAt' => array(
