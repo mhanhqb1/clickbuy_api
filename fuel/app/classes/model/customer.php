@@ -225,6 +225,7 @@ class Model_Customer extends Model_Abstract {
                         self::$_table_name . '.*'
                 )
                 ->from(self::$_table_name)
+                ->where(self::$_table_name.'.is_admin', '!=', 1)
         ;
 
         // Filter

@@ -142,17 +142,20 @@ class Model_Setting extends Model_Abstract {
         // Init
         $result = array();
         
-        $posts = DB::select('*')->from('posts')->where('disable', 0)->execute();
-        $result['post_count'] = count($posts);
-        
-        $products = DB::select('*')->from('products')->where('disable', 0)->execute();
-        $result['product_count'] = count($products);
-        
-        $orders = DB::select('*')->from('orders')->where('disable', 0)->execute();
-        $result['order_count'] = count($orders);
-        
-        $contacts = DB::select('*')->from('contacts')->execute();
-        $result['contact_count'] = count($contacts);
+        if (!empty($param['is_admin'])) {
+            // order count
+            $orders = DB::select('id')->from('orders')->execute();
+            $result['order_count'] = count($orders);
+            
+            // customer count
+            $customer = DB::select('id')->from('users')->where('is_admin', 0)->execute();
+            $result['customer_count'] = count($customer);
+        } else {
+            $userId = !empty($param['login_user_id']) ? $param['login_user_id'] : 0;
+            // order count
+            $orders = DB::select('*')->from('orders')->where('user_id', $userId)->order_by('id', 'desc')->execute();
+            $result['order_history'] = $orders;
+        }
         
         // Return
         return $result;
