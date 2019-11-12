@@ -61,7 +61,7 @@ class Model_Order extends Model_Abstract {
         $customer = array();
         
         if (empty($param['code'])) {
-            self::errorNotExist('code');
+            self::errorOther('code', self::ERROR_CODE_EMAIL_NOT_EXIST, 'Mã giới thiệu không tồn tại');
             return false;
         }
         
@@ -83,7 +83,7 @@ class Model_Order extends Model_Abstract {
             )
         ));
         if (empty($customer)) {
-            self::errorNotExist('code');
+            self::errorOther('code', self::ERROR_CODE_EMAIL_NOT_EXIST, 'Mã giới thiệu không tồn tại');
             return false;
         }
         $self->set('code', $param['code']);

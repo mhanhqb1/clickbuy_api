@@ -123,7 +123,7 @@ class Model_Customer extends Model_Abstract {
                         )
             ));
             if (!empty($check)) {
-                self::errorDuplicate('account');
+                self::errorOther('account', self::ERROR_CODE_FIELD_DUPLICATE, 'Tên tài khoản đã được sử dụng');
                 return false;
             }
             $self->set('account', $param['account']);
@@ -135,7 +135,7 @@ class Model_Customer extends Model_Abstract {
                         )
             ));
             if (!empty($check)) {
-                self::errorDuplicate('email');
+                self::errorOther('email', self::ERROR_CODE_FIELD_DUPLICATE, 'Email đã được sử dụng');
                 return false;
             }
             $self->set('email', $param['email']);
@@ -147,7 +147,7 @@ class Model_Customer extends Model_Abstract {
                         )
             ));
             if (!empty($check)) {
-                self::errorDuplicate('phone');
+                self::errorOther('phone', self::ERROR_CODE_FIELD_DUPLICATE, 'Số điện thoại đã được sử dụng');
                 return false;
             }
             $self->set('phone', $param['phone']);
