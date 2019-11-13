@@ -156,6 +156,10 @@ class Model_Setting extends Model_Abstract {
             // order count
             $orders = DB::select('*')->from('orders')->where('user_id', $userId)->order_by('id', 'desc')->execute();
             $result['order_history'] = $orders;
+            
+            // Withdraw history
+            $withdraws = DB::select('*')->from('withdraws')->where('user_id', $userId)->order_by('id', 'desc')->execute();
+            $result['withdraw_history'] = $withdraws;
         }
         
         // Return

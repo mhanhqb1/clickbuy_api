@@ -124,12 +124,11 @@ class Model_Withdraw extends Model_Abstract {
         ;
                         
         // Filter
+        if (!empty($param['user_id'])) {
+            $query->where(self::$_table_name.'.user_id', $param['user_id']);
+        }
         if (!empty($param['name'])) {
             $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
-        }
-        // Filter
-        if (!empty($param['code'])) {
-            $query->where(self::$_table_name.'.code', 'LIKE', "%{$param['code']}%");
         }
         
         // Pagination
