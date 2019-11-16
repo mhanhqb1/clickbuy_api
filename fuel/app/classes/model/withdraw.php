@@ -22,7 +22,8 @@ class Model_Withdraw extends Model_Abstract {
         'phone',
         'status',
         'created',
-        'amount'
+        'amount',
+        'status'
     );
 
     protected static $_observers = array(
