@@ -199,15 +199,49 @@ class Model_Withdraw extends Model_Abstract {
      * @param array $param Input data
      * @return int|bool User ID or false if error
      */
-    public static function disable($param)
+    public static function update_status($param)
     {
         $ids = !empty($param['id']) ? $param['id'] : '';
-        $disable = !empty($param['disable']) ? $param['disable'] : 0;
+        $status = !empty($param['status']) ? $param['status'] : 0;
         if (!is_array($ids)) {
             $ids = explode(',', $ids);
         }
         foreach ($ids as $id) {
-            $self = self::del(array('id' => $id));
+            $self = self::find($id);
+            if (!empty($self)) {
+                if (in_array($self['status'], array(2,3))) {
+                    self::errorOther('status', self::ERROR_CODE_FIELD_NOT_EXIST, 'Không thể cập nhật trạng thái');
+                    return false;
+                }
+                if ($status == 2 && $self['status'] == 0) {
+                    self::errorOther('status', self::ERROR_CODE_FIELD_NOT_EXIST, 'Chấp nhận trước khi chuyển tiền');
+                    return false;
+                }
+                $requestAmount = $self['amount'];
+                $userId = $self['user_id'];
+                $user = Model_Customer::find($userId);
+                if (empty($user)) {
+                    self::errorOther('user_id', self::ERROR_CODE_FIELD_NOT_EXIST, 'Khách hàng không tồn tại');
+                    return false;
+                }
+                if ($status == 1) {
+                    $userAmount = $user['total_amount'] - $user['withdraw_amount'];
+                    if ($requestAmount > $userAmount) {
+                        self::errorOther('amount', self::ERROR_CODE_FIELD_NOT_EXIST, 'Số dư không đủ');
+                        return false;
+                    }
+                    $user->set('withdraw_amount', $user['withdraw_amount'] + $requestAmount);
+                    $user->save();
+                } elseif ($status == 3 && $self['status'] == 1) {
+                    $user->set('withdraw_amount', $user['withdraw_amount'] - $requestAmount);
+                    $user->save();
+                }
+                $self->set('status', $status);
+                $self->save();
+            } else {
+                self::errorOther('request_id', self::ERROR_CODE_FIELD_NOT_EXIST, 'Request ID không tồn tại');
+                return false;
+            }
         }
         return true;
     }

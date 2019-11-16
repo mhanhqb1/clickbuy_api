@@ -24,4 +24,11 @@ class Controller_Withdraws extends \Controller_App {
     public function action_request() {
         return \Bus\Withdraws_Request::getInstance()->execute();
     }
+    
+    /**
+     * Get list
+     */
+    public function action_updatestatus() {
+        return \Bus\Withdraws_UpdateStatus::getInstance()->execute();
+    }
 }
