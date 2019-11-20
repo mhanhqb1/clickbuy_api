@@ -166,6 +166,10 @@ class Model_Customer extends Model_Abstract {
             $self->set('password', $pass);
         }
         $self->set('created', $time);
+        $self->set('is_admin', 0);
+        $self->set('total_amount', 0);
+        $self->set('withdraw_amount', 0);
+        $self->set('order_count', 0);
 
         // Save data
         if ($self->save()) {
